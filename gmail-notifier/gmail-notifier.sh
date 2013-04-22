@@ -74,7 +74,7 @@ function check_messages() {
   else
     NEW_CACHE=''
     for mail in ${MESSAGES[@]} ; do
-      echo "$mail"
+      #echo "$mail"
       id=$(extract $mail id)
       cached=$(echo $CACHE | grep "$id" | wc -l | sed "s/ //g")
       if [ $cached == 0 ];then
