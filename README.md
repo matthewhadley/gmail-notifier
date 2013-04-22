@@ -9,17 +9,17 @@ gmail and so don't have a way to have notifications triggered.
 
 - clone the repo somewhere then copy the `gmail-notifier` directory into your `/Applications` directory (or create a symlink to the cloned repo).
 - make sure you have a keychain entry with your gmail details, where the account value is your gmail address
-- run the notifier script once to ensure it has the right permissions (you may be prompted togive keychain access)
-   - `./gmail-notifier/gmail-notifier.sh -i 60 -k gmail -v` # where "gmail" is the name of your keychain key with your gmail details
+- run the notifier script once to, ensure it has the right permissions (you may be prompted togive keychain access)
+   - `./gmail-notifier/gmail-notifier.sh -i 60 -k gmail -v` # where *gmail* is the name of your keychain key with your gmail details
    - `ctrl+c` the above execution when done
-- by default checks for new emails happen every 10seconds, edit the `gmail-notifier/gmail-notifier.plist` file if you wish to change that interval
+- by default checks for new emails happen every 10 seconds, edit the `gmail-notifier/gmail-notifier.plist` file if you wish to change that interval
 - configure gmail-notifier run at login with this command `launchctl load /Applications/gmail-notifier/gmail-notifier.plist`
 
 You should now start getting notifications.
 
-To deactivate run: `launchctl unload /Applications/gmail-notifier/gmail-notifier.plist`
+To deactivate notifications run: `launchctl unload /Applications/gmail-notifier/gmail-notifier.plist`
 
-To have gmail-notifier start automatically at login, copy the plist into your LaunchAgents directory: `/Applications/gmail-notifier/gmail-notifier.plist ~/Library/LaunchAgents/`
+To have gmail-notifier start automatically at login, copy the plist into your LaunchAgents directory: `cp /Applications/gmail-notifier/gmail-notifier.plist ~/Library/LaunchAgents/`
 
 # Credits
 
