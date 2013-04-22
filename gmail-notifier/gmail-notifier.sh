@@ -8,16 +8,20 @@ Poll gmail for new email and use custom terminal-notifier build to display alert
 OPTIONS:
     -i      polling interval (in seconds, default 10)
     -k      keychain value with gmail details (defaults to "gmail")
+    -c      disable notifications (cli mode) implies once and verbose
+    -o      run once only
     -v      verbose mode
 EOF
 exit 1
 }
 
-while getopts "k:i:hv" option
+while getopts "ck:i:hvo" option
 do
   case $option in
+    c) CLI=1;VERBOSE=1;ONCE=1;;
     i) INTERVAL=$OPTARG;;
     k) KEY=$OPTARG;;
+    o) ONCE=1;;
     v) VERBOSE=1;;
     h) usage;;
     *) usage;;
@@ -68,11 +72,18 @@ function log(){
 
 function check_messages() {
   # curl the messages feed and pull out the interesting data
-  MESSAGES=$(curl -u $USERNAME:$PASSWORD --silent "https://mail.google.com/mail/feed/atom" | tr -d '\n' | awk -F '<entry>' '{for (i=2; i<=NF; i++) {print $i}}')
-  if [ "$MESSAGES" == "" ];then
+  MESSAGES=$(curl -u $USERNAME:$PASSWORD --silent "https://mail.google.com/mail/feed/atom")
+  count=$(extract "$MESSAGES" fullcount)
+  if [ "$count" == "" ];then
     log "error: unable to retrieve feed"
   else
     NEW_CACHE=''
+    if [ "$count" == "1" ];then
+      log "$count message"
+    else
+      log "$count messages"
+    fi
+    MESSAGES=$(echo "$MESSAGES" | tr -d '\n' | awk -F '<entry>' '{for (i=2; i<=NF; i++) {print $i}}')
     for mail in ${MESSAGES[@]} ; do
       #echo "$mail"
       id=$(extract $mail id)
@@ -85,9 +96,11 @@ function check_messages() {
         link=$(echo "$mail" | sed -n -e 's/.*<link rel="alternate" href="\(.*\)&amp;extsrc=atom".*/\1/p')
         link=$(echo "${link}&extsrc=atom" | sed 's/&amp;/\&/g')
         cmd=$(echo '/Applications/gmail-notifier/gmail-notifier.app/Contents/MacOS/gmail-notifier -title "'$sender'" -subtitle "'$title'" -message "'$summary'" -open "'$link'"')
-        eval $cmd > /dev/null
-        log "notify: \"$title\""
-        sleep 3
+        log "$sender - $title"
+        if [ -z "$CLI" ];then
+          eval $cmd > /dev/null
+          sleep 3
+        fi
       else
         log "cache: \"$id\""
       fi
@@ -97,10 +110,16 @@ function check_messages() {
   fi
 }
 
-while true; do
-  log "checking for new messages on $USERNAME"
+if [ -z "$ONCE" ];then
+  while true; do
+    log "checking for messages on $USERNAME"
+    check_messages
+    log "`date`  (repeat in $INTERVAL seconds)"
+    log "---"
+    sleep $INTERVAL
+  done
+else
+  log "checking for messages on $USERNAME"
   check_messages
-  log "`date`  (repeat in $INTERVAL seconds)"
-  log "---"
-  sleep $INTERVAL
-done
+  exit 0
+fi
