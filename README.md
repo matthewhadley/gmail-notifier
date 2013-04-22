@@ -19,6 +19,10 @@ You should now start getting notifications.
 
 To deactivate run `launchctl unload /Applications/gmail-notifier/gmail-notifier.plist`
 
+To have gmail-notifier start automatically at login, copy the plist into your LaunchAgents directory:
+
+    cp /Applications/gmail-notifier/gmail-notifier.plist ~/Library/LaunchAgents/
+
 # Credits
 
 The functionality for displaying the notifications is all from [terminal-notifier](https://github.com/alloy/terminal-notifier).
