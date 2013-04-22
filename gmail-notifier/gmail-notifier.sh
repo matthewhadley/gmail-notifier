@@ -6,8 +6,8 @@ cat << EOF
 Poll gmail for new email and use custom terminal-notifier build to display alerts
 
 OPTIONS:
-    -i      polling interval (in seconds)
-    -k      keychain value with gmail details
+    -i      polling interval (in seconds, default 10)
+    -k      keychain value with gmail details (defaults to "gmail")
     -v      verbose mode
 EOF
 exit 1
@@ -24,9 +24,8 @@ do
   esac
 done
 
-if [ -k "$KEY" ];then
-  echo "fatal: please specify gmail keychain value"
-  exit 1
+if [ -z "$KEY" ];then
+  KEY="gmail"
 fi
 
 function keychain() {
@@ -58,7 +57,7 @@ IFS=$'\n'
 
 # clean up message data
 function extract() {
-  echo "$1" | sed -n -e "s/.*<$2>\(.*\)<\/$2>.*/\1/p" | sed "s/&#39;/\\'/g" | sed 's/&quot;/\\"/g'
+  echo "$1" | sed -n -e "s/.*<$2>\(.*\)<\/$2>.*/\1/p" | sed 's/&amp;/\&/g' | sed "s/&#39;/\\'/g" | sed 's/&quot;/\\"/g'
 }
 
 function log(){
@@ -75,6 +74,7 @@ function check_messages() {
   else
     NEW_CACHE=''
     for mail in ${MESSAGES[@]} ; do
+      echo "$mail"
       id=$(extract $mail id)
       cached=$(echo $CACHE | grep "$id" | wc -l | sed "s/ //g")
       if [ $cached == 0 ];then
