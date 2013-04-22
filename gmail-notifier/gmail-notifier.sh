@@ -49,7 +49,7 @@ if [[ "$USERNAME" == "" || "$PASSWORD" == "" ]];then
 fi
 
 if [ -z "$INTERVAL" ];then
-  INTERVAL=60
+  INTERVAL=10
 fi
 
 CACHE=''
