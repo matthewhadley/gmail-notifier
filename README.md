@@ -17,11 +17,9 @@ gmail and so don't have a way to have notifications triggered.
 
 You should now start getting notifications.
 
-To deactivate run `launchctl unload /Applications/gmail-notifier/gmail-notifier.plist`
+To deactivate run: `launchctl unload /Applications/gmail-notifier/gmail-notifier.plist`
 
-To have gmail-notifier start automatically at login, copy the plist into your LaunchAgents directory:
-
-    cp /Applications/gmail-notifier/gmail-notifier.plist ~/Library/LaunchAgents/
+To have gmail-notifier start automatically at login, copy the plist into your LaunchAgents directory: `/Applications/gmail-notifier/gmail-notifier.plist ~/Library/LaunchAgents/`
 
 # Credits
 
