@@ -1,6 +1,6 @@
 # gmail-notifier
 
-Get OSX message center notifications for new unread emails.
+Get OSX message center notifications for new unread emails in your gmail inbox.
 
 ![notification](https://raw.github.com/wiki/diffsky/gmail-notifier/notification.jpg)
 
@@ -8,6 +8,9 @@ Get OSX message center notifications for new unread emails.
 
 - clone the repo somewhere then copy the `gmail-notifier` directory into your `/Applications` directory (or create a symlink to the cloned repo).
 - make sure you have a keychain entry with your gmail details, where the account value is your gmail address
+- run the notifier script once to ensure it has the right permissions (you may be prompted togive keychain access)
+   - `./gmail-notifier/gmail-notifier.sh -i 60 -k gmail -v` # where "gmail" is the name of your keychain key with your gmail details
+   - `ctrl+c` the above execution when done
 - by default checks for new emails happen every 10seconds, edit the `gmail-notifier/gmail-notifier.plist` file if you wish to change that interval
 - configure gmail-notifier run at login with this command `launchctl load /Applications/gmail-notifier/gmail-notifier.plist`
 
