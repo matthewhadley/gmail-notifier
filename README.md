@@ -1,6 +1,7 @@
 # gmail-notifier
 
-Get OSX message center notifications for new unread emails in your gmail inbox.
+Get OSX message center notifications for new unread emails in your gmail inbox. Ideal if you just use the web version of
+gmail and so don't have a way to have notifications triggered.
 
 ![notification](https://raw.github.com/wiki/diffsky/gmail-notifier/notification.jpg)
 
