@@ -60,8 +60,13 @@ CACHE=''
 IFS=$'\n'
 
 # clean up message data
+function sanitize(){
+  echo "$1" | sed 's/&amp;/\&/g' | sed "s/&#39;/\\'/g" | sed 's/&quot;/\\"/g'
+}
+
+# extract data
 function extract() {
-  echo "$1" | sed -n -e "s/.*<$2>\(.*\)<\/$2>.*/\1/p" | sed 's/&amp;/\&/g' | sed "s/&#39;/\\'/g" | sed 's/&quot;/\\"/g'
+  echo "$1" | sed -n -e "s/.*<$2>\(.*\)<\/$2>.*/\1/p"
 }
 
 function log(){
@@ -89,10 +94,11 @@ function check_messages() {
       id=$(extract $mail id)
       cached=$(echo $CACHE | grep "$id" | wc -l | sed "s/ //g")
       if [ $cached == 0 ];then
-        title=$(extract $mail title)
-        summary=$(extract $mail summary)
-        message=$(extract $mail message)
-        sender=$(extract $mail name)
+        title=$(sanitize $(extract $mail title))
+        summary=$(sanitize $(extract $mail summary))
+        message=$(sanitize $(extract $mail message))
+        #sender=$(sanitize $(extract $mail name))
+        sender=$(sanitize $(echo "$mail" | sed -ne "s/.*<author><name>\(.*\)<\/name><email>.*<\/email><\/author>.*/\1/p"))
         link=$(echo "$mail" | sed -n -e 's/.*<link rel="alternate" href="\(.*\)&amp;extsrc=atom".*/\1/p')
         link=$(echo "${link}&extsrc=atom" | sed 's/&amp;/\&/g')
         cmd=$(echo '/Applications/gmail-notifier/gmail-notifier.app/Contents/MacOS/gmail-notifier -title "'$sender'" -subtitle "'$title'" -message "'$summary'" -open "'$link'"')
