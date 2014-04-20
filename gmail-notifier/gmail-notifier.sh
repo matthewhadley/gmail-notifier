@@ -10,15 +10,17 @@ OPTIONS:
     -k      keychain value with gmail details (defaults to "gmail")
     -c      disable notifications (cli mode) implies once and verbose
     -o      run once only
+    -d      display delay before showing next of multiple notifications (default 3 seconds)
     -v      verbose mode
 EOF
 exit 1
 }
 
-while getopts "ck:i:hvo" option
+while getopts "cd:k:i:hvo" option
 do
   case $option in
     c) CLI=1;VERBOSE=1;ONCE=1;;
+    d) DISPLAY=$OPTARG;;
     i) INTERVAL=$OPTARG;;
     k) KEY=$OPTARG;;
     o) ONCE=1;;
@@ -54,6 +56,10 @@ fi
 
 if [ -z "$INTERVAL" ];then
   INTERVAL=10
+fi
+
+if [ -z "$DISPLAY" ];then
+  DISPLAY=3
 fi
 
 CACHE=''
@@ -115,7 +121,7 @@ function check_messages() {
         if [ -z "$CLI" ];then
           echo "$cmd"
           eval $cmd > /dev/null
-          sleep 3
+          sleep $DISPLAY
         fi
       else
         log "cache: \"$id\""
