@@ -61,7 +61,13 @@ IFS=$'\n'
 
 # clean up message data
 function sanitize(){
-  echo "$1" | sed 's/&amp;/\&/g' | sed "s/&#39;/\\'/g" | sed 's/&quot;/\\"/g'
+  # step 1 - replace html ampersands
+  # step 2 - replace html single quotes with right single quotation mark
+  # step 3 - replace html double quotes with double quotation
+  # step 4 - replace single quote with right single quotation mark
+  #          note that single quoted output is treated by bash as string literal (ie not interpreted)
+  #          so replace single quotes with http://unicode-table.com/en/2019/ to avoid unexpected end of matching ' pairs
+  echo "$1" | sed 's/&amp;/\&/g' | sed "s/&#39;/’/g" | sed 's/&quot;/\\"/g' | sed "s/'/’/g"
 }
 
 # extract data
@@ -97,13 +103,17 @@ function check_messages() {
         title=$(sanitize $(extract $mail title))
         summary=$(sanitize $(extract $mail summary))
         message=$(sanitize $(extract $mail message))
+
         #sender=$(sanitize $(extract $mail name))
         sender=$(sanitize $(echo "$mail" | sed -ne "s/.*<author><name>\(.*\)<\/name><email>.*<\/email><\/author>.*/\1/p"))
         link=$(echo "$mail" | sed -n -e 's/.*<link rel="alternate" href="\(.*\)&amp;extsrc=atom".*/\1/p')
         link=$(echo "${link}&extsrc=atom" | sed 's/&amp;/\&/g')
-        cmd=$(echo '/Applications/gmail-notifier/gmail-notifier.app/Contents/MacOS/gmail-notifier -title "'$sender'" -subtitle "'$title'" -message "'$summary'" -open "'$link'"')
+        exec='/Applications/gmail-notifier/gmail-notifier.app/Contents/MacOS/gmail-notifier'
+        # note that single quoted output is treated by bash as string literal (ie not interpreted)
+        cmd=$(echo $exec "-title '$sender' -subtitle '$title' -message '$summary' -open '$link'" )
         log "$sender - $title"
         if [ -z "$CLI" ];then
+          echo "$cmd"
           eval $cmd > /dev/null
           sleep 3
         fi
