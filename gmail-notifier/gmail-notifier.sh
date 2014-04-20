@@ -11,18 +11,20 @@ OPTIONS:
     -c      disable notifications (cli mode) implies once and verbose
     -o      run once only
     -d      display delay before showing next of multiple notifications (default 3 seconds)
+    -s      optional sound to play (form osx sound list, for example "Ping", defaults to no sound)
     -v      verbose mode
 EOF
 exit 1
 }
 
-while getopts "cd:k:i:hvo" option
+while getopts "cd:k:i:hvos:" option
 do
   case $option in
     c) CLI=1;VERBOSE=1;ONCE=1;;
     d) DISPLAY=$OPTARG;;
     i) INTERVAL=$OPTARG;;
     k) KEY=$OPTARG;;
+    s) SOUND=$OPTARG;;
     o) ONCE=1;;
     v) VERBOSE=1;;
     h) usage;;
@@ -109,17 +111,18 @@ function check_messages() {
         title=$(sanitize $(extract $mail title))
         summary=$(sanitize $(extract $mail summary))
         message=$(sanitize $(extract $mail message))
-
         #sender=$(sanitize $(extract $mail name))
         sender=$(sanitize $(echo "$mail" | sed -ne "s/.*<author><name>\(.*\)<\/name><email>.*<\/email><\/author>.*/\1/p"))
         link=$(echo "$mail" | sed -n -e 's/.*<link rel="alternate" href="\(.*\)&amp;extsrc=atom".*/\1/p')
         link=$(echo "${link}&extsrc=atom" | sed 's/&amp;/\&/g')
         exec='/Applications/gmail-notifier/gmail-notifier.app/Contents/MacOS/gmail-notifier'
+        if [ ! -z "$SOUND" ];then
+          exec="$exec -sound '$SOUND'"
+        fi
         # note that single quoted output is treated by bash as string literal (ie not interpreted)
         cmd=$(echo $exec "-title '$sender' -subtitle '$title' -message '$summary' -open '$link'" )
         log "$sender - $title"
         if [ -z "$CLI" ];then
-          echo "$cmd"
           eval $cmd > /dev/null
           sleep $DISPLAY
         fi
