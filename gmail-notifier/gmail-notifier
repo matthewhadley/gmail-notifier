@@ -75,7 +75,7 @@ function sanitize(){
   # step 4 - replace single quote with right single quotation mark
   #          note that single quoted output is treated by bash as string literal (ie not interpreted)
   #          so replace single quotes with http://unicode-table.com/en/2019/ to avoid unexpected end of matching ' pairs
-  echo "$1" | sed 's/&amp;/\&/g' | sed "s/&#39;/’/g" | sed 's/&quot;/\\"/g' | sed "s/'/’/g"
+  echo "$1" | sed 's/&amp;/\&/g' | sed "s/&#39;/’/g" | sed 's/&quot;/\"/g' | sed "s/'/’/g"
 }
 
 # extract data
