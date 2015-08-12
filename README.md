@@ -12,13 +12,13 @@ gmail and so don't have a way to have notifications triggered.
 - run the notifier script once to, ensure it has the right permissions (you may be prompted togive keychain access)
    - `./gmail-notifier/gmail-notifier -k gmail -o -v` # where *gmail* is the name of your keychain key with your gmail details
 - by default checks for new emails happen every 10 seconds, edit the `gmail-notifier/gmail-notifier.plist` file if you wish to change that interval
-- configure gmail-notifier run at login with this command `launchctl load /Applications/gmail-notifier/gmail-notifier.plist`
+- configure gmail-notifier run at login with this command `launchctl load /Applications/gmail-notifier/com.diffsky.gmail-notifier.plist`
 
 You should now start getting notifications.
 
-To deactivate notifications run: `launchctl unload /Applications/gmail-notifier/gmail-notifier.plist`
+To deactivate notifications run: `launchctl unload /Applications/gmail-notifier/com.diffsky.gmail-notifier.plist`
 
-To have gmail-notifier start automatically at login, copy the plist into your LaunchAgents directory: `cp /Applications/gmail-notifier/gmail-notifier.plist ~/Library/LaunchAgents/`
+To have gmail-notifier start automatically at login, copy the plist into your LaunchAgents directory: `cp /Applications/gmail-notifier/com.diffsky.gmail-notifier.plist ~/Library/LaunchAgents/`
 
 # Credits
 
